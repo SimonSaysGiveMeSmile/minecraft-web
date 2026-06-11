@@ -3,7 +3,8 @@ import Terrain, { BlockType } from '../terrain'
 import Block from '../terrain/mesh/block'
 import Control from '../control'
 import Audio from '../audio'
-import generate from './shapes'
+import generate, { Build } from './shapes'
+import aiGenerate from './ai'
 import { isRenderable } from './font'
 
 /**
@@ -130,7 +131,7 @@ export default class WordBuilder {
     if (e.key === 'Enter') {
       const description = this.buffer.trim()
       this.close()
-      description && this.build(description)
+      description && this.submit(description)
     } else if (e.key === 'Escape') {
       this.close()
     } else if (e.key === 'Backspace') {
@@ -179,8 +180,19 @@ export default class WordBuilder {
     )
   }
 
-  build = (description: string) => {
-    const { name, voxels } = generate(description)
+  // AI first (open vocabulary), procedural shapes as the offline fallback
+  submit = async (description: string) => {
+    this.showToast(`✦ Imagining “${description}”…`)
+    const ai = await aiGenerate(description)
+    if (ai?.voxels.length) {
+      this.build(ai)
+      return
+    }
+    this.build(generate(description))
+  }
+
+  build = (result: Build) => {
+    const { name, voxels } = result
     if (!voxels.length) {
       return
     }

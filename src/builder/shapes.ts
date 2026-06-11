@@ -19,7 +19,7 @@ const R = Math.round
  * Voxel canvas with de-duplication (later writes win, so details
  * like windows / eyes can overwrite base shapes).
  */
-class Canvas {
+export class Canvas {
   map = new Map<string, Voxel>()
 
   set(x: number, y: number, z: number, type: BlockType) {
