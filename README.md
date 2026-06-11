@@ -1,30 +1,44 @@
-# minecraft-threejs
+# Minecraft Web — Build Anything With Words
 
-English ｜ [中文](https://github.com/vyse12138/minecraft-threejs/blob/main/README_ZH.md)
+Play: **https://minecraft-web-phi.vercel.app**
 
-Minecraft clone made with Three.js and TypeScript
+A browser Minecraft clone (Three.js + TypeScript) with a twist: press **B**,
+type a description — *"a giant glass castle"*, *"wooden ship"*, *"rainbow"* —
+and watch it get built **block by block, right in front of your eyes**.
 
-Check it out: [Minecraft - Three.js](https://mc.yulei.me/)
+## The Word Builder
 
-Recommend to use Chrome to get the best experience
+- **B** opens the build prompt while playing
+- Understands ~20 shapes: house, castle, tower, pyramid, tree, bridge, ship,
+  wall, sphere, cube, arch, statue, heart, star, smiley, rainbow, pillar,
+  fountain, igloo, snowman — plus synonyms
+- Modifiers: materials (*stone, wooden, glass, diamond, quartz, sand, …*)
+  and sizes (*tiny, small, big, giant, massive*)
+- Anything it doesn't recognize gets spelled out as **giant block letters**,
+  so every description builds *something*
+- Structures face you, sit on the terrain, and animate in over ~4 seconds
 
-![preview](https://user-images.githubusercontent.com/88306344/154383952-9b33bad4-eebb-4a98-a12e-f5f137422d06.gif)
+## Controls
 
-## Features:
+| Key | Action |
+| --- | --- |
+| WASD / Space / Shift | move / jump / sneak |
+| Left / Right click | destroy / place block |
+| **B** | **build anything from words** |
+| Q | toggle flying |
+| E | menu |
+| F | fullscreen |
 
-- Destroy block and place block
-- Mouse wheel (or number key) to select different block types
-- Movement and collision detection
-- Random terrain / blocks / tree generations
-- Infinite world
-- Game save / load
-- Sound effect and BGM
-- Highlight the block at crosshair
-- Basic UI and settings
-- Mobile friendly
+## Develop
 
-## Working on:
+```bash
+npm install
+npm run dev     # local dev server
+npm run build   # production build to dist/
+```
 
-- Multiplayer
-- Generates water
-- Higher performance algorithm
+## Credits
+
+Based on the excellent MIT-licensed
+[minecraft-threejs](https://github.com/Vyse12138/minecraft-threejs) by
+Yulei Zhu — the word-builder feature (`src/builder/`) is added on top.

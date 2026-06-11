@@ -85,7 +85,8 @@ export default class Terrain {
   // other properties
   blocks: THREE.InstancedMesh[] = []
   blocksCount: number[] = []
-  blocksFactor = [1, 0.2, 0.1, 0.7, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+  // extra capacity on buildable types so the word builder has headroom
+  blocksFactor = [1, 0.3, 0.2, 0.8, 0.2, 0.4, 0.15, 0.4, 0.3, 0.4, 0.3, 0.1]
 
   customBlocks: Block[] = []
   highlight: Highlight
