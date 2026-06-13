@@ -1,9 +1,12 @@
 {
-  "name": "minecraft-threejs",
+  "name": "minecraft-web",
   "version": "0.0.0",
   "license": "MIT",
-  "author": "Yulei Zhu",
-  "description": "Minecraft clone made with Three.js and TypeScript",
+  "author": "SimonSaysGiveMeSmile",
+  "contributors": [
+    "Yulei Zhu (Vyse12138) — original minecraft-threejs"
+  ],
+  "description": "Browser Minecraft with an AI word-builder — press B, describe anything, watch it build. Built on the MIT-licensed minecraft-threejs.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

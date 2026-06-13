@@ -1,5 +1,7 @@
 # Minecraft Web — Build Anything With Words
 
+By **[SimonSaysGiveMeSmile](https://github.com/SimonSaysGiveMeSmile)**
+
 Play: **https://minecraft-web-phi.vercel.app**
 
 A browser Minecraft clone (Three.js + TypeScript) with a twist: press **B**,
@@ -39,6 +41,10 @@ npm run build   # production build to dist/
 
 ## Credits
 
-Based on the excellent MIT-licensed
+The word builder (`src/builder/`) and this build are by
+**[SimonSaysGiveMeSmile](https://github.com/SimonSaysGiveMeSmile)**.
+
+Built on the excellent MIT-licensed
 [minecraft-threejs](https://github.com/Vyse12138/minecraft-threejs) by
-Yulei Zhu — the word-builder feature (`src/builder/`) is added on top.
+Yulei Zhu (Vyse12138), whose original copyright is retained in `LICENSE` per
+the MIT terms.
