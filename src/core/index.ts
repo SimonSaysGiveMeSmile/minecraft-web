@@ -14,6 +14,11 @@ export default class Core {
   scene: THREE.Scene
   renderer: THREE.Renderer
 
+  // exposed so the day / night cycle can drive them
+  sunLight = new THREE.PointLight(0xffffff, 0.5)
+  sunLight2 = new THREE.PointLight(0xffffff, 0.2)
+  ambient = new THREE.AmbientLight(0x404040)
+
   initCamera = () => {
     this.camera.fov = 50
     this.camera.aspect = window.innerWidth / window.innerHeight
@@ -37,16 +42,13 @@ export default class Core {
     this.scene.fog = new THREE.Fog(backgroundColor, 1, 96)
     this.scene.background = new THREE.Color(backgroundColor)
 
-    const sunLight = new THREE.PointLight(0xffffff, 0.5)
-    sunLight.position.set(500, 500, 500)
-    this.scene.add(sunLight)
+    this.sunLight.position.set(500, 500, 500)
+    this.scene.add(this.sunLight)
 
-    const sunLight2 = new THREE.PointLight(0xffffff, 0.2)
-    sunLight2.position.set(-500, 500, -500)
-    this.scene.add(sunLight2)
+    this.sunLight2.position.set(-500, 500, -500)
+    this.scene.add(this.sunLight2)
 
-    const reflectionLight = new THREE.AmbientLight(0x404040)
-    this.scene.add(reflectionLight)
+    this.scene.add(this.ambient)
   }
 
   initRenderer = () => {

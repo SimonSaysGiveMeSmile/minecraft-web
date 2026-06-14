@@ -8,6 +8,8 @@
   <button id="action-down" class="joystick-button down hidden" role="div">
     🔽
   </button>
+  <button id="action-block" class="joystick-button block" role="div" title="Change block">🧱</button>
+  <button id="action-build" class="joystick-button build" role="div" title="Build with words">✨</button>
 </div>
 
 <style>
@@ -57,5 +59,15 @@
   .down {
     grid-column: -3 / -2;
     grid-row: 3;
+  }
+  .block {
+    grid-column: -2 / -1;
+    grid-row: 3;
+    font-size: 34px;
+  }
+  .build {
+    grid-column: -2 / -1;
+    grid-row: 2;
+    font-size: 34px;
   }
 </style>

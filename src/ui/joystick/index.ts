@@ -92,6 +92,29 @@ export default class Joystick {
     this.initButton({ actionKey: ActionKey.UP, key: ' ' })
     this.initButton({ actionKey: ActionKey.DOWN, key: 'Shift' })
 
+    // block select — mobile has no number keys / scroll wheel, so cycle here
+    const blockBtn = document.querySelector('#action-block') as HTMLButtonElement
+    blockBtn?.addEventListener('pointerdown', e => {
+      e.stopPropagation()
+      const c = this.control as any
+      c.holdingIndex = (c.holdingIndex + 1) % c.holdingBlocks.length
+      c.holdingBlock = c.holdingBlocks[c.holdingIndex]
+      blockBtn.textContent = String(c.holdingIndex + 1)
+      setTimeout(() => { blockBtn.textContent = '🧱' }, 700)
+    })
+    blockBtn?.addEventListener('pointerup', e => e.stopPropagation())
+
+    // AI word builder — prompt-based on touch (no physical keyboard to type into)
+    const buildBtn = document.querySelector('#action-build') as HTMLButtonElement
+    buildBtn?.addEventListener('pointerdown', e => {
+      e.stopPropagation()
+      const wb = (window as any).__game?.wordBuilder
+      if (!wb) return
+      const desc = window.prompt('Build with words — describe anything:')
+      if (desc && desc.trim()) wb.submit(desc.trim())
+    })
+    buildBtn?.addEventListener('pointerup', e => e.stopPropagation())
+
     // camera control
     document.addEventListener('pointermove', e => {
       if (this.pageX !== 0 || this.pageY !== 0) {
