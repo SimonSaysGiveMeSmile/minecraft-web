@@ -18,10 +18,15 @@
     bottom: 0;
     display: grid;
     width: 100%;
+    box-sizing: border-box;
     grid-template-columns: repeat(auto-fill, 50px);
     grid-template-rows: repeat(3, 1fr);
     gap: 10px;
     padding: 10px;
+    /* keep controls clear of the notch / home indicator on modern phones */
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    padding-left: calc(10px + env(safe-area-inset-left));
+    padding-right: calc(10px + env(safe-area-inset-right));
   }
   .joystick-button {
     width: 52px;

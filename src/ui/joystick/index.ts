@@ -22,14 +22,26 @@ export default class Joystick {
   }
 
   control: Control
-  pageX = 0
-  pageY = 0
-  clickX = 0
-  clickY = 0
   euler: THREE.Euler
+
+  // look-gesture state. The look pointer is tracked by id so a second finger can
+  // drive the movement joystick at the same time without the camera jumping
+  // between the two touches.
+  lookId: number | null = null
+  lookX = 0
+  lookY = 0
+  moved = false
   clickTimeout?: ReturnType<typeof setTimeout>
   clickInterval?: ReturnType<typeof setInterval>
-  hold = false
+  holding = false
+
+  private container?: HTMLElement
+  private initialized = false
+
+  // true while the pause menu is open — suspends touch look / build / destroy so
+  // taps on the menu don't leak through to the world behind it
+  private isPaused = () =>
+    !document.querySelector('.menu')?.classList.contains('hidden')
 
   // emit keyboard event
   private emitKeyboardEvent = (key: string) => {
@@ -82,7 +94,16 @@ export default class Joystick {
   }
 
   init = () => {
+    // init() runs on every "Play"/"Resume"; only build the DOM and bind the
+    // document-level look handlers once, then just reveal the controls.
+    if (this.initialized) {
+      this.show()
+      return
+    }
+    this.initialized = true
+
     htmlToDom(UI)
+    this.container = document.querySelector('.joystick') as HTMLElement
 
     this.initButton({ actionKey: ActionKey.FRONT, key: 'w' })
     this.initButton({ actionKey: ActionKey.LEFT, key: 'a' })
@@ -115,49 +136,76 @@ export default class Joystick {
     })
     buildBtn?.addEventListener('pointerup', e => e.stopPropagation())
 
-    // camera control
-    document.addEventListener('pointermove', e => {
-      if (this.pageX !== 0 || this.pageY !== 0) {
-        this.euler.setFromQuaternion(this.control.camera.quaternion)
-        this.euler.y -= 0.01 * (e.pageX - this.pageX)
-        this.euler.x -= 0.01 * (e.pageY - this.pageY)
-        this.euler.x = Math.max(
-          -Math.PI / 2,
-          Math.min(Math.PI / 2, this.euler.x)
-        )
-        this.control.camera.quaternion.setFromEuler(this.euler)
-      }
-      this.pageX = e.pageX
-      this.pageY = e.pageY
-      this.clickTimeout && clearTimeout(this.clickTimeout)
-    })
-
-    // click control
+    // --- look + tap (camera + place/destroy) -------------------------------
+    // The first finger that lands outside a control becomes the look pointer.
+    // Buttons stopPropagation on their own pointer events, so a finger on the
+    // joystick never hijacks the camera and the two gestures run in parallel.
     document.addEventListener('pointerdown', e => {
-      this.clickX = e.pageX
-      this.clickY = e.pageY
+      if (this.isPaused() || this.lookId !== null) return
+      this.lookId = e.pointerId
+      this.lookX = e.pageX
+      this.lookY = e.pageY
+      this.moved = false
 
+      // hold (no drag) = destroy block, repeating
       this.clickTimeout = setTimeout(() => {
-        if (e.pageX === this.clickX && e.pageY === this.clickY) {
+        if (this.moved) return
+        this.control.mousedownHandler(this.emitClickEvent(0))
+        this.holding = true
+        this.clickInterval = setInterval(() => {
           this.control.mousedownHandler(this.emitClickEvent(0))
-          this.clickInterval = setInterval(() => {
-            this.control.mousedownHandler(this.emitClickEvent(0))
-          }, 333)
-          this.hold = true
-        }
+        }, 333)
       }, 500)
     })
 
-    document.addEventListener('pointerup', e => {
+    document.addEventListener('pointermove', e => {
+      if (e.pointerId !== this.lookId) return
+      const dx = e.pageX - this.lookX
+      const dy = e.pageY - this.lookY
+
+      // past the dead-zone it's a look gesture, not a tap — cancel the destroy
+      if (!this.moved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+        this.moved = true
+        this.clickTimeout && clearTimeout(this.clickTimeout)
+      }
+
+      this.euler.setFromQuaternion(this.control.camera.quaternion)
+      this.euler.y -= 0.01 * dx
+      this.euler.x -= 0.01 * dy
+      this.euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.euler.x))
+      this.control.camera.quaternion.setFromEuler(this.euler)
+
+      this.lookX = e.pageX
+      this.lookY = e.pageY
+    })
+
+    const endLook = (e: PointerEvent) => {
+      if (e.pointerId !== this.lookId) return
       this.clickTimeout && clearTimeout(this.clickTimeout)
       this.clickInterval && clearInterval(this.clickInterval)
 
-      if (!this.hold && e.pageX === this.clickX && e.pageY === this.clickY) {
+      // a clean tap (no drag, no hold) places a block
+      if (!this.holding && !this.moved && !this.isPaused()) {
         this.control.mousedownHandler(this.emitClickEvent(2))
       }
-      this.hold = false
-      this.pageX = 0
-      this.pageY = 0
-    })
+      this.holding = false
+      this.lookId = null
+    }
+    document.addEventListener('pointerup', endLook)
+    document.addEventListener('pointercancel', endLook)
+  }
+
+  show = () => {
+    this.container?.classList.remove('hidden')
+  }
+
+  hide = () => {
+    this.container?.classList.add('hidden')
+    // drop any in-flight gesture so movement / destroy doesn't stick while paused
+    this.clickTimeout && clearTimeout(this.clickTimeout)
+    this.clickInterval && clearInterval(this.clickInterval)
+    this.holding = false
+    this.moved = false
+    this.lookId = null
   }
 }

@@ -3,6 +3,7 @@ import Materials, { MaterialType } from './mesh/materials'
 import Block from './mesh/block'
 import Highlight from './highlight'
 import Noise from './noise'
+import { isMobile } from '../utils'
 
 import Generate from './worker/generate?worker'
 
@@ -56,7 +57,8 @@ export default class Terrain {
   // core properties
   scene: THREE.Scene
   camera: THREE.PerspectiveCamera
-  distance = 3
+  // phones have far less GPU/CPU headroom — render fewer chunks by default
+  distance = isMobile ? 2 : 3
   chunkSize = 24
 
   // terrain properties

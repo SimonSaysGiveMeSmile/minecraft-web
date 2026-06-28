@@ -18,6 +18,19 @@ export default class UI {
     this.crossHair.innerHTML = '+'
     document.body.appendChild(this.crossHair)
 
+    // mobile pause button — desktop pauses with the 'e' key / pointer-lock exit,
+    // but touch has neither, so without this a phone player can never get back to
+    // the menu to save, change settings, or exit.
+    if (isMobile) {
+      this.mobileMenuBtn.className = 'mobile-menu hidden'
+      this.mobileMenuBtn.innerHTML = '☰'
+      this.mobileMenuBtn.addEventListener('pointerdown', e => {
+        e.stopPropagation()
+        this.onPause()
+      })
+      document.body.appendChild(this.mobileMenuBtn)
+    }
+
     // play
     this.play?.addEventListener('click', () => {
       if (this.play?.innerHTML === 'Play') {
@@ -34,6 +47,9 @@ export default class UI {
         terrain.generate()
         terrain.camera.position.y = 40
         control.player.setMode(Mode.walking)
+      } else if (isMobile) {
+        // "Resume" on touch: no pointer lock to re-acquire, so re-enter directly
+        this.onPlay()
       }
       !isMobile && control.control.lock()
     })
@@ -108,7 +124,11 @@ export default class UI {
       this.settings?.classList.add('hidden')
     })
 
-    // render distance
+    // render distance — keep the slider in sync with the (lower) mobile default
+    if (isMobile && this.distanceInput instanceof HTMLInputElement) {
+      this.distanceInput.value = String(terrain.distance)
+      this.distance && (this.distance.innerHTML = `Render Distance: ${terrain.distance}`)
+    }
     this.distanceInput?.addEventListener('input', (e: Event) => {
       if (this.distance && e.target instanceof HTMLInputElement) {
         this.distance.innerHTML = `Render Distance: ${e.target.value}`
@@ -200,6 +220,7 @@ export default class UI {
 
   menu = document.querySelector('.menu')
   crossHair = document.createElement('div')
+  mobileMenuBtn = document.createElement('div')
 
   // buttons
   play = document.querySelector('#play')
@@ -230,7 +251,10 @@ export default class UI {
   settingBack = document.querySelector('#setting-back')
 
   onPlay = () => {
-    isMobile && this.joystick.init()
+    if (isMobile) {
+      this.joystick.init()
+      this.mobileMenuBtn.classList.remove('hidden')
+    }
     this.menu?.classList.add('hidden')
     this.menu?.classList.remove('start')
     this.play && (this.play.innerHTML = 'Resume')
@@ -240,6 +264,10 @@ export default class UI {
   }
 
   onPause = () => {
+    if (isMobile) {
+      this.joystick.hide()
+      this.mobileMenuBtn.classList.add('hidden')
+    }
     this.menu?.classList.remove('hidden')
     this.crossHair.classList.add('hidden')
     this.save && (this.save.innerHTML = 'Save and Exit')
@@ -247,6 +275,10 @@ export default class UI {
   }
 
   onExit = () => {
+    if (isMobile) {
+      this.joystick.hide()
+      this.mobileMenuBtn.classList.add('hidden')
+    }
     this.menu?.classList.add('start')
     this.play && (this.play.innerHTML = 'Play')
     this.save && (this.save.innerHTML = 'Load Game')

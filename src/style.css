@@ -139,6 +139,27 @@ body {
   display: none;
 }
 
+/* on-screen pause button (touch only) — top-right is clear during play since
+   the GitHub corner ribbon is hidden while in game */
+.mobile-menu {
+  z-index: 4;
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 8px);
+  right: calc(env(safe-area-inset-right) + 8px);
+
+  width: 46px;
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
+  font-size: 26px;
+
+  color: white;
+  background-color: hsla(0, 0%, 11%, 0.55);
+  border: 2px solid rgb(141, 139, 139);
+  user-select: none;
+  cursor: pointer;
+}
+
 .features {
   z-index: 2;
   position: fixed;
