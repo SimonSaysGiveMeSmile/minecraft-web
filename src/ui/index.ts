@@ -108,7 +108,24 @@ export default class UI {
       }
     })
 
-    // guide
+    // guide — the default panel documents keyboard/mouse, which is meaningless
+    // on a phone, so swap in touch instructions there
+    if (isMobile) {
+      const guideText = this.features?.querySelector('p')
+      if (guideText) {
+        guideText.innerHTML = `
+          <b>Left pad:</b> move <br />
+          <b>Drag screen:</b> look around <br />
+          <b>Tap:</b> place block <br />
+          <b>Hold:</b> destroy block <br />
+          <b>🧱:</b> change block <br />
+          <b>✨:</b> build anything from words! <br />
+          <b>⏹️ / 🔼:</b> toggle fly · jump / up <br />
+          <b>☰:</b> menu (save / settings / exit) <br />
+          <b>Survive:</b> monsters come out at night — hold to fight back,
+          eat animals to heal, find villages! <br />`
+      }
+    }
     this.feature?.addEventListener('click', () => {
       this.features?.classList.remove('hidden')
     })

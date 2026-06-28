@@ -4,9 +4,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   overflow: hidden;
+  /* stop iOS Safari pull-to-refresh / rubber-band scroll fighting touch look */
+  overscroll-behavior: none;
 }
 * {
   touch-action: none;
+  /* kill the grey flash when tapping on-screen controls */
+  -webkit-tap-highlight-color: transparent;
 }
 
 @font-face {
